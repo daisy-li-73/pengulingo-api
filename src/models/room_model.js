@@ -1,4 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
+import Player from './player_model';
 
 export const RoomStates = {
   IN_PROGRESS: 'IN_PROGRESS',
@@ -8,15 +9,11 @@ export const RoomStates = {
 };
 
 const RoomSchema = new Schema({
-  creator: String,
+  creator: Player,
   numQuestions: Number,
-  players: [String],
+  players: [Player],
   roomKey: String,
   status: { type: String, enum: RoomStates, default: RoomStates.CLOSED },
-  player1Points: Number,
-  player2Points: Number,
-  player3Points: Number,
-  player4Points: Number,
   ranking: [String],
 }, {
   toObject: { virtuals: true },
