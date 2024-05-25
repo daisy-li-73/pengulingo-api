@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
+import routes from './routes';
+import dotenv from 'dotenv';
 
 // initialize
 const app = express();
@@ -26,11 +29,14 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); // To parse the incoming requests with JSON payloads
 
 // additional init stuff should go before hitting the routing
+app.use('', routes);
 
 // default index route
 app.get('/', (req, res) => {
   res.send('hi');
 });
+
+require('dotenv').config();
 
 // START THE SERVER
 // =============================================================================

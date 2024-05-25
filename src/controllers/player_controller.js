@@ -14,21 +14,4 @@ export async function createPlayer(playerInfo) {
   return newPlayer.save();
 }
 
-export async function getPlayerState(playerName) {
-  const player = await Player.findOne({ name: playerName });
-
-  if (!player) {
-    throw new Error(`Player with name ${playerName} does not exist`);
-  }
-
-  const state =  {
-    name: player.name,
-    host: player.host,
-    points: player.points,
-    active: player.active,
-  };
-
-  return state;
-}
-
  

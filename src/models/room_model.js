@@ -9,9 +9,9 @@ export const RoomStates = {
 };
 
 const RoomSchema = new Schema({
-  creator: Player,
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
+  players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }], 
   numQuestions: Number,
-  players: [Player],
   roomKey: String,
   status: { type: String, enum: RoomStates, default: RoomStates.CLOSED },
   ranking: [String],
