@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 });
 
 // create a game - admin
-router.post('/rooms', async (req, res) => {
+router.post('/rooms/createRoom', async (req, res) => {
   const roomInitInfo = req.body;
   try {
     const result = await Rooms.createRoom(roomInitInfo);
