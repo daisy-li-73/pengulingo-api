@@ -1,6 +1,6 @@
 import Player from '../models/player_model';
 
-export async function createPlayer(playerInfo) {
+export default async function createPlayer(playerInfo) {
   const newPlayer = new Player();
   newPlayer.name = playerInfo.name;
   newPlayer.host = playerInfo.host;
