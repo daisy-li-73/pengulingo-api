@@ -13,5 +13,3 @@ export async function createPlayer(playerInfo) {
 
   return newPlayer.save();
 }
-
- 
