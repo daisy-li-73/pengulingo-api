@@ -58,8 +58,13 @@ export async function createRoom(roomInitInfo) {
   }
 }
 
-export async function joinRoom(roomId, playerInfo) {
+export async function joinRoom(roomKey, playerInfo) {
   try {
+    const roomId = roomCodes[roomKey];
+    if (!roomId) {
+      throw new Error('Invalid room code');
+    }
+
     const room = await Room.findById(roomId).populate('players');
 
     if (!room) {

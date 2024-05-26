@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 });
 
 // create a game - admin
-router.post('/rooms/createRoom', async (req, res) => {
+router.post('/rooms', async (req, res) => {
   const roomInitInfo = req.body;
   try {
     const result = await Rooms.createRoom(roomInitInfo);
@@ -38,12 +38,11 @@ router.get('/rooms/:id', async (req, res) => {
 });
 
 // join a room
-router.post('/rooms/:id', async (req, res) => {
-  const roomId = req.params.id;
-  const playerInfo = req.body;
+router.post('/rooms/joinRoom', async (req, res) => {
+  const { roomKey, playerName } = req.body;
 
   try {
-    const result = await Rooms.joinRoom(roomId, playerInfo);
+    const result = await Rooms.joinRoom(roomKey, playerName);
     return res.json(result);
   } catch (error) {
     return res.status(422).json({ error: error.message });
