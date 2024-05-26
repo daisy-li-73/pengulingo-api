@@ -1,7 +1,6 @@
 /* eslint-disable linebreak-style */
 import { Router } from 'express';
 import * as Rooms from './controllers/room_controller';
-import * as Player from './controllers/player_controller';
 
 const router = Router();
 // here we set up handling of endpoints
@@ -70,8 +69,7 @@ router.post('/rooms/:id/submissions', async (req, res) => {
     if (correct) {
       const result = await Rooms.addPoints(roomId, player);
       return res.json(result);
-    }
-    else {
+    } else {
       const result = await Rooms.resetPoints(roomId, player);
       return res.json(result);
     }
@@ -91,6 +89,5 @@ router.patch('/rooms/:id/players', async (req, res) => {
     return res.status(422).json({ error: error.message });
   }
 });
-
 
 export default router;

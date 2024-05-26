@@ -3,8 +3,8 @@ import cors from 'cors';
 import path from 'path';
 import morgan from 'morgan';
 import mongoose from 'mongoose';
-import routes from './routes';
 import dotenv from 'dotenv';
+import routes from './routes';
 
 // initialize
 const app = express();
