@@ -1,25 +1,27 @@
 import Room, { RoomStates } from '../models/room_model';
 import { createPlayer } from './player_controller';
 
+const numRooms = 0;
+
 export const roomCodes = {
-  // Code and activity status
-  "5L4Y": true,
-  "W1LD": true,
-  "W1NN": true,
-  "G0LD": true,
-  "S1LV": true,
-  "BR0N": true,
-  "PL4T": true,
-  "D14M": true,
-  "EM3R": true,
-  "RUBY": true,
-  "5L4Y": true
+  // Code and associated room ID
+  "5L4Y": "",
+  "W1LD": "",
+  "W1NN": "",
+  "G0LD": "",
+  "S1LV": "",
+  "BR0N": "",
+  "PL4T": "",
+  "D14M": "",
+  "EM3R": "",
+  "RUBY": "",
+  "5L4Y": ""
 }
 
-function getRoomCode(codes) {
+function getRoomCode(codes, id) {
   for (const code in codes) {
-    if (codes[code] === true) {
-      codes[code] = false;
+    if (codes[code] === "") {
+      codes[code] = id;
       return code;
     }
   }
@@ -27,14 +29,13 @@ function getRoomCode(codes) {
 }
 
 export async function createRoom(roomInitInfo) {
+  if (numRooms >= 10) {
+    throw new Error('Maximum number of rooms reached. Please try again later.');
+  }
+
   try {
     // Create the creator player and get its ObjectId
     const creator = await createPlayer({ name: roomInitInfo.creator, host: true });
-    // Generate a room code
-    const roomKey = getRoomCode(roomCodes);
-    if (roomKey === null) {
-      throw new Error('Maximum number of rooms reached. Please try again later.');
-    }
 
     // Create a new Room document with the creator and players fields as ObjectId references
     const newRoom = new Room({
@@ -43,9 +44,13 @@ export async function createRoom(roomInitInfo) {
       ranking: [],
       numQuestions: roomInitInfo.numQuestions,
       status: RoomStates.CLOSED,
-      roomKey: roomKey,
+      roomKey: "",
     });
+   await newRoom.save();
 
+   // Generate a room code
+    const roomCode = getRoomCode(roomCodes, newRoom._id);
+    newRoom.roomKey = roomCode;
     return await newRoom.save();
   } catch (error) {
     console.error('Error creating room:', error);
@@ -123,7 +128,7 @@ export async function changeStatus(roomId, status) {
 
   if (status === RoomStates.QUIT) { // Finished a game, room can be deleted, roomCode can be reused
     // await room.remove();    
-    roomCodes[room.roomKey] = true;
+    roomCodes[room.roomKey] = "";
   }
 
   await room.save();
