@@ -1,0 +1,228 @@
+import Room, { RoomStates } from '../models/room_model';
+import { createPlayer } from './player_controller';
+
+export const roomCodes = {
+  // Code and activity status
+  "5L4Y": true,
+  "W1LD": true,
+  "W1NN": true,
+  "G0LD": true,
+  "S1LV": true,
+  "BR0N": true,
+  "PL4T": true,
+  "D14M": true,
+  "EM3R": true,
+  "RUBY": true,
+  "5L4Y": true
+}
+
+function getRoomCode(codes) {
+  for (const code in codes) {
+    if (codes[code] === true) {
+      codes[code] = false;
+      return code;
+    }
+  }
+  return null;
+}
+
+export async function createRoom(roomInitInfo) {
+  try {
+    // Create the creator player and get its ObjectId
+    const creator = await createPlayer({ name: roomInitInfo.creator, host: true });
+    // Generate a room code
+    const roomKey = getRoomCode(roomCodes);
+    if (roomKey === null) {
+      throw new Error('Maximum number of rooms reached. Please try again later.');
+    }
+
+    // Create a new Room document with the creator and players fields as ObjectId references
+    const newRoom = new Room({
+      creator: creator._id,
+      players: [creator._id],
+      ranking: [],
+      numQuestions: roomInitInfo.numQuestions,
+      status: RoomStates.CLOSED,
+      roomKey: roomKey,
+    });
+
+    return await newRoom.save();
+  } catch (error) {
+    console.error('Error creating room:', error);
+    throw new Error('Could not create room');
+  }
+}
+
+export async function joinRoom(roomId, playerInfo) {
+  try {
+    const room = await Room.findById(roomId).populate('players');
+
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    if (room.players.length == 4) {
+      throw new Error('Room is full');
+    }
+
+    // Make sure player's intended name does not already exist
+    const newPlayerName = playerInfo.name;
+    const existingPlayerNames = room.players.map(player => player.name);
+
+    if (existingPlayerNames.includes(newPlayerName)) {
+      throw new Error(`Player with your intended name (${newPlayerName}) already exists`);
+    }
+
+    if (room.status !== RoomStates.OPEN) {
+      throw new Error(`This room is not open for joining in state ${room.status}`);
+    }
+
+    // Username is free; add player to room
+    const newPlayer = await createPlayer(playerInfo);
+    room.players.push(newPlayer._id); // Push the ObjectId of the new player
+
+    await room.save();
+
+    const updatedRoom = await Room.findById(roomId).populate('players');
+    return updatedRoom;
+  } catch (error) {
+    console.error('Error joining room:', error);
+    throw new Error('Could not join room');
+  }
+}
+
+export async function changeStatus(roomId, status) {
+  const room = await Room.findById(roomId).populate('players');
+
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  if (status in RoomStates) {
+    room.status = status;
+  } else {
+    throw new Error(`Invalid status. Must be ${RoomStates.CLOSED}, ${RoomStates.OPEN}, ${RoomStates.IN_PROGRESS}, ${RoomStates.GAME_OVER}, or ${RoomStates.QUIT}`);
+  }
+
+  if (status == RoomStates.IN_PROGRESS) { // Start a game
+    for (const player of room.players) {
+      if (player.active === false) {
+        throw new Error('Cannot start game with inactive players')
+      }
+    }
+  }
+
+  if (status == RoomStates.CLOSED && room.rankings.length == room.numQuestions) { // Finished a game, back to choosing a game
+    // Cleanup
+    for (const player of room.players) {
+      player.active = false;
+      await player.save();
+    }
+    room.ranking = [];
+  }
+
+  if (status === RoomStates.QUIT) { // Finished a game, room can be deleted, roomCode can be reused
+    await room.remove();    
+    roomCodes[room.roomKey] = true;
+  }
+
+  await room.save();
+  return room.save();
+}
+
+// returns the main game state with each player's points, room status, and room id
+export async function getState(roomId) {
+  const room = await Room.findById(roomId).populate('players');
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  const state = {
+    roomId: room._id,
+    status: room.status,
+    players: room.players,
+  };
+
+  return state;
+}
+
+// Increment a player's points
+export async function addPoints(roomId, playerName) {
+  const room = await Room.findById(roomId).populate('players');
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  if (room.status !== 'IN_PROGRESS') {
+    throw new Error('This game is not in progress. Can\'t submit now.');
+  }
+
+  const playerNames = room.players.map(player => player.name);
+  const player = room.players.find(player => player.name === playerName);
+  if (!player) {
+    throw new Error(`Player (${playerName}) not in room`);
+  }
+
+  // Update the points of the found player
+  if (player.points === room.numQuestions) {
+    throw new Error(`Player (${playerName}) has already reached the end`);
+  }
+
+  player.points += 1;
+  await player.save();
+
+  const numQuestions = room.numQuestions;
+  if (player.points === numQuestions) {
+    room.ranking.push(playerName);
+  }
+
+  // Close room if all players have reached end
+  if (room.ranking.length === room.players.length) {
+    room.status = RoomStates.GAME_OVER;
+  }
+
+  await room.save();
+  return player;
+}
+
+// Reset a player's points (if they get a question wrong)
+export async function resetPoints(roomId, playerName) {
+  const room = await Room.findById(roomId).populate('players');
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  if (room.status !== 'IN_PROGRESS') {
+    throw new Error('This game is not in progress. Can\'t submit now.');
+  }
+
+  const playerNames = room.players.map(player => player.name);
+  const player = room.players.find(player => player.name === playerName);
+  if (!player) {
+    throw new Error(`Player (${playerName}) not in room`);
+  }
+
+  player.points = 0;
+  await player.save()
+  return player;
+}
+
+export async function updatePlayerStatus(roomId, playerName, active) {
+  const room = await Room.findById(roomId).populate('players');
+
+  if (!room) {
+    throw new Error('Room not found');
+  }
+
+  const playerNames = room.players.map(player => player.name);
+  const player = room.players.find(player => player.name === playerName);
+  if (!player) {
+    throw new Error(`Player (${playerName}) not in room`);
+  }
+
+  // Update the active status of the found player
+  player.active = active;
+  await player.save();
+
+  return player;
+}
