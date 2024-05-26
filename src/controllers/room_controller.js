@@ -122,7 +122,7 @@ export async function changeStatus(roomId, status) {
   }
 
   if (status === RoomStates.QUIT) { // Finished a game, room can be deleted, roomCode can be reused
-    await room.remove();    
+    // await room.remove();    
     roomCodes[room.roomKey] = true;
   }
 
