@@ -6,6 +6,7 @@ export const RoomStates = {
   CLOSED: 'CLOSED',
   GAME_OVER: 'GAME_OVER',
   OPEN: 'OPEN',
+  QUIT: 'QUIT',
 };
 
 const RoomSchema = new Schema({
