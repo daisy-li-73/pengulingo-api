@@ -60,8 +60,6 @@ export async function createRoom(roomInitInfo) {
 }
 
 export async function joinRoom(roomKey, playerInfo) {
-  console.log('playerinfo: ', playerInfo.name, playerInfo.host);
-
   try {
     const roomId = roomCodes[roomKey];
     if (!roomId) {
@@ -90,7 +88,7 @@ export async function joinRoom(roomKey, playerInfo) {
     }
 
     // Username is free; add player to room
-    const newPlayer = await createPlayer(playerInfo.name, playerInfo.host);
+    const newPlayer = await createPlayer({ name: playerInfo.name, host: false });
     room.players.push(newPlayer._id); // Push the ObjectId of the new player
 
     await room.save();

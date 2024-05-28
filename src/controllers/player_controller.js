@@ -3,7 +3,6 @@ import Player from '../models/player_model';
 
 export async function createPlayer(playerInfo) {
   const newPlayer = new Player();
-  console.log('creatPlayer info:', playerInfo.name, playerInfo.host);
   newPlayer.name = playerInfo.name;
   newPlayer.host = playerInfo.host;
   if (playerInfo.host) {

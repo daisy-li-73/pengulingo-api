@@ -38,7 +38,7 @@ router.get('/rooms/:id', async (req, res) => {
 });
 
 // join a room
-router.post('/rooms/joinRoom', async (req, res) => {
+router.post('/rooms/:id', async (req, res) => {
   const { roomKey, playerInfo } = req.body;
 
   try {
