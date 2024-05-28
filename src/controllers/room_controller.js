@@ -72,10 +72,6 @@ export async function joinRoom(roomKey, playerInfo) {
       throw new Error('Room not found');
     }
 
-    if (room.players.length === 3) {
-      room.status = RoomStates.CLOSED;
-    }
-
     // Make sure player's intended name does not already exist
     const existingPlayerNames = room.players.map((player) => { console.log('existing name = ', player.name); return player.name; });
 
@@ -90,6 +86,10 @@ export async function joinRoom(roomKey, playerInfo) {
     // Username is free; add player to room
     const newPlayer = await createPlayer({ name: playerInfo.name, host: false });
     room.players.push(newPlayer._id); // Push the ObjectId of the new player
+
+    if (room.players.length === 4) {
+      room.status = RoomStates.CLOSED;
+    }
 
     await room.save();
 
