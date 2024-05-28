@@ -153,6 +153,9 @@ export async function getState(roomId) {
     roomId: room._id,
     status: room.status,
     players: room.players,
+    roomKey: room.roomKey,
+    numQuestions: room.numQuestions,
+    ranking: room.ranking,
   };
 
   return state;
