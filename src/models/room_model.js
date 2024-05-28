@@ -1,5 +1,4 @@
 import mongoose, { Schema } from 'mongoose';
-import Player from './player_model';
 
 export const RoomStates = {
   IN_PROGRESS: 'IN_PROGRESS',
@@ -11,7 +10,7 @@ export const RoomStates = {
 
 const RoomSchema = new Schema({
   creator: { type: mongoose.Schema.Types.ObjectId, ref: 'Player' },
-  players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }], 
+  players: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Player' }],
   numQuestions: Number,
   roomKey: String,
   status: { type: String, enum: RoomStates, default: RoomStates.CLOSED },
