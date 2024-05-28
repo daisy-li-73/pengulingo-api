@@ -29,6 +29,7 @@ function getRoomCode(codes, id) {
 }
 
 export async function createRoom(roomInitInfo) {
+  console.log('roomInitInfo: ', roomInitInfo.creator, roomInitInfo.numQuestions);
   if (numRooms >= 10) {
     throw new Error('Maximum number of rooms reached. Please try again later.');
   }

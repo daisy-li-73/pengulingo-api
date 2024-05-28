@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
 // create a game - admin
 router.post('/rooms', async (req, res) => {
   const roomInitInfo = req.body;
+  console.log('routes ', roomInitInfo.creator, roomInitInfo.numQuestions);
   try {
     const result = await Rooms.createRoom(roomInitInfo);
     return res.json(result);
