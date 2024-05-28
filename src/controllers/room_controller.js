@@ -29,6 +29,7 @@ function getRoomCode(codes, id) {
 }
 
 export async function createRoom(roomInitInfo) {
+  console.log('roomInitInfo: ', roomInitInfo.creator, roomInitInfo.numQuestions);
   if (numRooms >= 10) {
     throw new Error('Maximum number of rooms reached. Please try again later.');
   }
@@ -59,6 +60,8 @@ export async function createRoom(roomInitInfo) {
 }
 
 export async function joinRoom(roomKey, playerInfo) {
+  console.log('playerinfo: ', playerInfo.name, playerInfo.host);
+
   try {
     const roomId = roomCodes[roomKey];
     if (!roomId) {
@@ -76,7 +79,7 @@ export async function joinRoom(roomKey, playerInfo) {
     }
 
     // Make sure player's intended name does not already exist
-    const existingPlayerNames = room.players.map((player) => { return player.name; });
+    const existingPlayerNames = room.players.map((player) => { console.log('existing name = ', player.name); return player.name; });
 
     if (existingPlayerNames.includes(playerInfo.name)) {
       throw new Error(`Player with your intended name (${playerInfo.name}) already exists`);

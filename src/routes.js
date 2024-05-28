@@ -14,6 +14,7 @@ router.get('/', (req, res) => {
 // create a game - admin
 router.post('/rooms', async (req, res) => {
   const roomInitInfo = req.body;
+  console.log('routes ', roomInitInfo.creator, roomInitInfo.numQuestions);
   try {
     const result = await Rooms.createRoom(roomInitInfo);
     return res.json(result);
@@ -38,10 +39,10 @@ router.get('/rooms/:id', async (req, res) => {
 
 // join a room
 router.post('/rooms/joinRoom', async (req, res) => {
-  const { roomKey, playerName } = req.body;
+  const { roomKey, playerInfo } = req.body;
 
   try {
-    const result = await Rooms.joinRoom(roomKey, playerName);
+    const result = await Rooms.joinRoom(roomKey, playerInfo);
     return res.json(result);
   } catch (error) {
     return res.status(422).json({ error: error.message });
