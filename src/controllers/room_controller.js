@@ -72,7 +72,7 @@ export async function joinRoom(roomKey, playerInfo) {
       throw new Error('Room not found');
     }
 
-    if (room.players.length === 4) {
+    if (room.players.length === 3) {
       room.status = RoomStates.CLOSED;
     }
 
