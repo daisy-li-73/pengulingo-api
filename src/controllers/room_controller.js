@@ -72,26 +72,26 @@ export async function joinRoom(roomKey, playerInfo) {
       throw new Error('Room not found');
     }
 
-    // Make sure player's intended name does not already exist
-    const existingPlayerNames = room.players.map((player) => { console.log('existing name = ', player.name); return player.name; });
-
-    if (existingPlayerNames.includes(playerInfo.name)) {
-      throw new Error(`Player with your intended name (${playerInfo.name}) already exists`);
-    }
-
     if (room.status !== RoomStates.OPEN) {
       throw new Error(`This room is not open for joining in state ${room.status}`);
     }
 
-    // Username is free; add player to room
-    const newPlayer = await createPlayer({ name: playerInfo.name, host: false });
-    room.players.push(newPlayer._id); // Push the ObjectId of the new player
+    if (room.players.length < 4) {
+      // Make sure player's intended name does not already exist
+      const existingPlayerNames = room.players.map((player) => { console.log('existing name = ', player.name); return player.name; });
 
-    if (room.players.length === 4) {
-      room.status = RoomStates.CLOSED;
+      if (existingPlayerNames.includes(playerInfo.name)) {
+        throw new Error(`Player with your intended name (${playerInfo.name}) already exists`);
+      }
+
+      // Username is free; add player to room
+      const newPlayer = await createPlayer({ name: playerInfo.name, host: false });
+      room.players.push(newPlayer._id); // Push the ObjectId of the new player
+
+      await room.save();
+    } else {
+      throw new Error('Room is full');
     }
-
-    await room.save();
 
     const updatedRoom = await Room.findById(roomId).populate('players');
     return updatedRoom;
