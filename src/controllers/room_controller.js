@@ -208,9 +208,9 @@ export async function resetPoints(roomId, playerName) {
     throw new Error('Room not found');
   }
 
-  if (room.status !== 'IN_PROGRESS') {
-    throw new Error('This game is not in progress. Can\'t submit now.');
-  }
+  // if (room.status !== 'IN_PROGRESS') {
+  //   throw new Error('This game is not in progress. Can\'t submit now.');
+  // }
 
   const player = room.players.find((pl) => { return pl.name === playerName; });
   if (!player) {
