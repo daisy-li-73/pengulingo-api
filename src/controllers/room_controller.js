@@ -115,6 +115,10 @@ export async function changeStatus(roomId, status) {
     throw new Error(`Invalid status. Must be ${RoomStates.CLOSED}, ${RoomStates.OPEN}, ${RoomStates.IN_PROGRESS}, ${RoomStates.GAME_OVER}, or ${RoomStates.QUIT}`);
   }
 
+  if (status === RoomStates.OPEN || status === RoomStates.CLOSED) { // Reset a game
+    room.ranking = [];
+  }
+
   if (status === RoomStates.IN_PROGRESS) { // Start a game
     room.players.forEach((player) => {
       if (player.active === false) {
