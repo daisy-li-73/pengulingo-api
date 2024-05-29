@@ -132,12 +132,14 @@ export async function changeStatus(roomId, status) {
   }
 
   if (status === RoomStates.QUIT) { // Finished a game, room can be deleted, roomCode can be reused
-    // await room.remove();
+    await room.deleteOne();
     roomCodes[room.roomKey] = '';
+    return;
   }
 
   await room.save();
-  return room.save();
+  // eslint-disable-next-line consistent-return
+  return room;
 }
 
 // returns the main game state with each player's points, room status, and room id
