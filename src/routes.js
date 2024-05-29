@@ -64,17 +64,19 @@ router.patch('/rooms/:id', async (req, res) => {
 
 router.post('/rooms/:id/submissions', async (req, res) => {
   const roomId = req.params.id;
-  const { player, correct } = req.body;
+  const { playerName, correct } = req.body;
+  console.log('routes: ', playerName, correct);
 
   try {
     if (correct) {
-      const result = await Rooms.addPoints(roomId, player);
+      const result = await Rooms.addPoints(roomId, playerName);
       return res.json(result);
     } else {
-      const result = await Rooms.resetPoints(roomId, player);
+      const result = await Rooms.resetPoints(roomId, playerName);
       return res.json(result);
     }
   } catch (error) {
+    console.log('error: ', error.message);
     return res.status(422).json({ error: error.message });
   }
 });

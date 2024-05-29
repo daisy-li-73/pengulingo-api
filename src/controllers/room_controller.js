@@ -29,7 +29,7 @@ function getRoomCode(codes, id) {
 }
 
 export async function createRoom(roomInitInfo) {
-  console.log('roomInitInfo: ', roomInitInfo.creator, roomInitInfo.numQuestions);
+  // console.log('roomInitInfo: ', roomInitInfo.creator, roomInitInfo.numQuestions);
   if (numRooms >= 10) {
     throw new Error('Maximum number of rooms reached. Please try again later.');
   }
@@ -54,7 +54,7 @@ export async function createRoom(roomInitInfo) {
     newRoom.roomKey = roomCode;
     return await newRoom.save();
   } catch (error) {
-    console.error('Error creating room:', error);
+    // console.error('Error creating room:', error);
     throw new Error('Could not create room');
   }
 }
@@ -164,14 +164,15 @@ export async function getState(roomId) {
 
 // Increment a player's points
 export async function addPoints(roomId, playerName) {
+  console.log('add points: ', roomId, playerName);
   const room = await Room.findById(roomId).populate('players');
   if (!room) {
     throw new Error('Room not found');
   }
 
-  if (room.status !== 'IN_PROGRESS') {
-    throw new Error('This game is not in progress. Can\'t submit now.');
-  }
+  // if (room.status !== 'IN_PROGRESS') {
+  //   throw new Error('This game is not in progress. Can\'t submit now.');
+  // }
 
   const player = room.players.find((pl) => { return pl.name === playerName; });
   if (!player) {
