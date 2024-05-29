@@ -103,6 +103,7 @@ export async function joinRoom(roomKey, playerInfo) {
 
 export async function changeStatus(roomId, status) {
   const room = await Room.findById(roomId).populate('players');
+  console.log('received status ', status);
 
   if (!room) {
     throw new Error('Room not found');
