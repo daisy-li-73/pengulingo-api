@@ -122,7 +122,7 @@ export async function changeStatus(roomId, status) {
     });
   }
 
-  if (status === RoomStates.CLOSED && room.rankings.length === room.numQuestions) { // Finished a game, back to choosing a game
+  if (status === RoomStates.CLOSED && room.ranking.length === room.numQuestions) { // Finished a game, back to choosing a game
     // Cleanup
     room.players.forEach(async (player) => {
       player.active = false;
