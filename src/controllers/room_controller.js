@@ -116,6 +116,10 @@ export async function changeStatus(roomId, status) {
   }
 
   if (status === RoomStates.OPEN || status === RoomStates.CLOSED) { // Reset a game
+    room.players.forEach(async (player) => {
+      player.points = 0;
+      await player.save();
+    });
     room.ranking = [];
   }
 
