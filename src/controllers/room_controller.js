@@ -115,23 +115,15 @@ export async function changeStatus(roomId, status) {
     throw new Error(`Invalid status. Must be ${RoomStates.CLOSED}, ${RoomStates.OPEN}, ${RoomStates.IN_PROGRESS}, ${RoomStates.GAME_OVER}, or ${RoomStates.QUIT}`);
   }
 
-  if (status === RoomStates.OPEN || status === RoomStates.CLOSED) { // Reset a game
-    room.players.forEach(async (player) => {
-      player.points = 0;
-      await player.save();
-    });
-    room.ranking = [];
-  }
+  // if (status === RoomStates.IN_PROGRESS) { // Start a game
+  //   room.players.forEach((player) => {
+  //     if (player.active === false) {
+  //       throw new Error('Cannot start game with inactive players');
+  //     }
+  //   });
+  // }
 
-  if (status === RoomStates.IN_PROGRESS) { // Start a game
-    room.players.forEach((player) => {
-      if (player.active === false) {
-        throw new Error('Cannot start game with inactive players');
-      }
-    });
-  }
-
-  if (status === RoomStates.CLOSED && room.ranking.length === room.numQuestions) { // Finished a game, back to choosing a game
+  if (status === RoomStates.OPEN && room.ranking.length === room.numQuestions) { // Finished a game, back to choosing a game
     // Cleanup
     room.players.forEach(async (player) => {
       player.active = false;
