@@ -1,6 +1,4 @@
 # Pengulingo - Back End
-[deployed url](https://pengulingo-api.onrender.com)
-
 This is a repository for the back end code of Pengulingo.
 
 ## Architecture
